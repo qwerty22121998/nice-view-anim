@@ -24,15 +24,26 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 #define ANIM_SPACE 0
 #define ANIM_ASTRO 1
+#define ANIM_GLITCH 2
+#define ANIM_LUI 3
+#define ANIM_SPACE_TRAVEL 4
 
 #if CONFIG_ZMK_NICE_VIEW_ANIM_VARIANT == ANIM_SPACE
-#include "space_art.c"
+#include "arts/space_art.c"
 const struct nice_view_anim anim = anim_space;
 #elif CONFIG_ZMK_NICE_VIEW_ANIM_VARIANT == ANIM_ASTRO
-#include "astro_art.c"
+#include "arts/astro_art.c"
 const struct nice_view_anim anim = anim_astro;
+#elif CONFIG_ZMK_NICE_VIEW_ANIM_VARIANT == ANIM_GLITCH
+#include "arts/glitch_art.c"
+const struct nice_view_anim anim = anim_glitch;
+#elif CONFIG_ZMK_NICE_VIEW_ANIM_VARIANT == ANIM_LUI
+#include "arts/lui_art.c"
+const struct nice_view_anim anim = anim_lui;
+#elif CONFIG_ZMK_NICE_VIEW_ANIM_VARIANT == ANIM_SPACE_TRAVEL
+#include "arts/space_travel_art.c"
+const struct nice_view_anim anim = anim_space_travel;
 #endif
-
 
 static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 
@@ -134,7 +145,7 @@ int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
 
   render_animation(widget->obj, &anim);
 
-   sys_slist_append(&widgets, &widget->node);
+  sys_slist_append(&widgets, &widget->node);
   widget_battery_status_init();
   widget_peripheral_status_init();
 

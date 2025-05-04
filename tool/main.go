@@ -11,6 +11,14 @@ import (
 	"strings"
 )
 
+func Map[T any](arr []T, fn func(T) T) []T {
+	res := make([]T, len(arr))
+	for i, v := range arr {
+		res[i] = fn(v)
+	}
+	return res
+}
+
 type extractor struct {
 	originFile    string
 	baseFileName  string
@@ -27,12 +35,15 @@ func (e *extractor) exec() error {
 	if err := os.MkdirAll(e.dstDir, os.ModePerm); err != nil {
 		return err
 	}
+	if err := os.MkdirAll(filepath.Join(e.dstDir, "images"), os.ModePerm); err != nil {
+		return err
+	}
 	return e.extract()
 }
 
 func (e *extractor) extractFrame(frame *image.Paletted, index int) error {
 	fileName := fmt.Sprintf("%s%d.png", e.baseFileName, index)
-	dstFileName := filepath.Join(e.dstDir, fileName)
+	dstFileName := filepath.Join(e.dstDir, "images", fileName)
 	f, err := os.Create(dstFileName)
 	if err != nil {
 		return err
@@ -50,15 +61,17 @@ func (e *extractor) lvglConvert() error {
 		"run", "--rm", "-u", "1000:1000", "-v", fmt.Sprintf("%v:/usr/src/proj", e.dstDir), "lv_img_conv",
 		"-f", "-d", "-c", "CF_INDEXED_1_BIT",
 	}
-	args = append(args, e.fileNames...)
+	args = append(args, Map(e.fileNames, func(s string) string {
+		return filepath.Join("images", s)
+	})...)
 	if err := exec.Command("docker", args...).Run(); err != nil {
 		return err
 	}
-	for _, fileName := range e.fileNames {
-		if err := os.Remove(filepath.Join(e.dstDir, fileName)); err != nil {
-			return err
-		}
-	}
+	//for _, fileName := range e.fileNames {
+	//	if err := os.Remove(filepath.Join(e.dstDir, fileName)); err != nil {
+	//		return err
+	//	}
+	//}
 	return nil
 }
 
@@ -72,7 +85,7 @@ func (e *extractor) merge() error {
 	defer f.Close()
 
 	if _, err := f.WriteString(`#include <lvgl.h>
-#include "animation.h"
+#include "art.h"
 
 #ifndef LV_ATTRIBUTE_MEM_ALIGN
 #define LV_ATTRIBUTE_MEM_ALIGN

@@ -44,6 +44,7 @@ include:
     shield: urchin_left nice_view_adapter  nice_view_anim #custom shield
   - board: nice_nano_v2
     shield: urchin_right nice_view_adapter nice_view_anim #custom shield
+    cmake-args: -DCONFIG_ZMK_NICE_VIEW_ANIM_VARIANT=1 #animation variant
 ```
 
 Additionaly, I've added a small app to generate animation. You can find it in the `tool` folder. To use it, run the following command:
@@ -55,5 +56,11 @@ go run main.go file_name.gif
 Remember to build image from `https://github.com/lvgl/lv_img_conv` first, check the pull request for proper Dockerfile.
 
 ## Credit
-
+![space](tool/space.gif)
 [space by Giuseppe](https://lospec.com/gallery/gsep/space)
+
+![glitch](tool/glitch.gif)[Glitch](https://in.pinterest.com/pin/pinterest-in-2024--35747390786249865/)
+
+![lui](tool/lui.gif)[Lui by Nikki](https://nikkiprosow.com/pixel-art)
+
+![astro](tool/astro.gif)[Astro](#)
